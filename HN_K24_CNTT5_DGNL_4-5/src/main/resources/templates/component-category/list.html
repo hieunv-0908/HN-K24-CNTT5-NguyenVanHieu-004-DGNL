@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Danh sách loại component</h1>
+<button>
+    <a th:href="@{/component-category/add}">Thêm</a>
+</button>
+<table border="1">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>Tên</th>
+            <th>Mô tả</th>
+            <th colspan="2">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+
+
+        <tr th:each="componentCategory,stt : ${componentCategories}">
+            <td th:text="${stt.count}"></td>
+            <td th:text="${componentCategory.name}"></td>
+            <td th:text="${componentCategory.description}"></td>
+            <td>
+                <button>
+                    <a th:href="@{'/component-category/edit/' + ${componentCategory.id}}">Sửa</a>
+                </button>
+            </td>
+            <td>
+                <button>
+                    <a th:href="@{'/component-category/delete/' + ${componentCategory.id}}" onclick="return confirm('Are you sure you want to delete this component category?');">Xoá</a>
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>

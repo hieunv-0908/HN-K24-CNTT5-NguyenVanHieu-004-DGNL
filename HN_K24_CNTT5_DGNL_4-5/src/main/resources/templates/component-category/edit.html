@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Component Category</title>
+</head>
+<body>
+<h1>Edit Component Category</h1>
+<form th:action="@{'/component-category/edit/' + ${componentCategory.id}}" method="post" th:object="${componentCategory}">
+
+    <label for="name">Name:</label>
+    <input type="text" id="name" th:field="*{name}" required><br>
+
+    <label for="description">Description:</label>
+    <textarea id="description" th:field="*{description}" required></textarea><br>
+
+    <input type="submit" value="Update">
+</form>
+<a href="/component-category/list">Back to List</a>
+</body>
+</html>

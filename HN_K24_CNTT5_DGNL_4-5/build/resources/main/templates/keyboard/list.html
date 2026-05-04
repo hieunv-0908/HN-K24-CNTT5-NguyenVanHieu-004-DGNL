@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button>
+    <a th:href="@{/keyboard/add}">Thêm</a>
+</button>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Image</th>
+                <th>In Stock</th>
+                <th>Category</th>
+                <th>Release Date</th>
+                <th>Manufacturer</th>
+                <th colspan="2">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="keyboard,stt : ${keyboards}">
+                <td th:text="${stt.count}"></td>
+                <td th:text="${keyboard.partName}">Keyboard Name</td>
+                <td th:text="${keyboard.price}">Keyboard Price</td>
+                <td><img th:src="${keyboard.partImage}" alt="Keyboard Image" width="100"/></td>
+                <td th:text="${keyboard.inStock}">In Stock</td>
+                <td th:text="${keyboard.category != null ? keyboard.category.name : 'N/A'}">Category Name</td>
+                <td th:text="${keyboard.releaseDate}">Release Date</td>
+                <td th:text="${keyboard.manufacturer}">Manufacturer</td>
+                <td>
+                    <a th:href="@{'/keyboard/edit/' + ${keyboard.id}}">Edit</a>
+                    <a th:href="@{'/keyboard/delete/' + ${keyboard.id}}" onclick="return confirm('Are you sure you want to delete this keyboard?');">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+<a href="component-category/list">Quản lý loại</a>
+</body>
+</html>

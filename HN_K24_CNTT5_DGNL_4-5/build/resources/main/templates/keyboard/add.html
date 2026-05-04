@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Keyboard</title>
+</head>
+<body>
+<h1>Add Keyboard Part</h1>
+<form th:action="@{/keyboard/add}" method="post" th:object="${keyboard}">
+    <label for="partName">Part Name:</label>
+    <input type="text" id="partName" th:field="*{partName}" required><br>
+
+    <label for="manufacturer">Manufacturer:</label>
+    <input type="text" id="manufacturer" th:field="*{manufacturer}" required><br>
+
+    <label for="price">Price:</label>
+    <input type="number" id="price" th:field="*{price}" required><br>
+
+    <label for="releaseDate">Release Date:</label>
+    <input type="date" id="releaseDate" th:field="*{releaseDate}" required><br>
+
+    <label for="partImage">Part Image URL:</label>
+    <input type="text" id="partImage" th:field="*{partImage}"><br>
+
+    <label for="category">Category:</label>
+    <select id="category" th:field="*{category}">
+        <option value="">Select Category</option>
+        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+    </select><br>
+
+    <label for="inStock">In Stock:</label>
+    <input type="checkbox" id="inStock" th:field="*{inStock}"><br>
+
+    <input type="submit" value="Add">
+</form>
+<a href="/keyboard/list">Back to List</a>
+</body>
+</html>
