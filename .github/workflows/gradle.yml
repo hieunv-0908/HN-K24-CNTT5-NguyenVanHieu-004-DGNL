@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: Java CI with Gradle (Full Pipeline)
 
 on:
   push:
@@ -6,19 +6,17 @@ on:
   pull_request:
     branches: [ "main" ]
 
-# Khai báo thư mục làm việc mặc định cho tất cả câu lệnh `run`
 defaults:
   run:
     working-directory: ./HN_K24_CNTT5_DGNL_4-5
 
 jobs:
-  build:
+  pipeline:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -26,7 +24,6 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    # Chỉ định build-root-directory để Gradle Action tìm thấy gradlew trong thư mục con
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
       with:
@@ -35,24 +32,25 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x gradlew
 
-    - name: Build with Gradle Wrapper
-      run: ./gradlew build
+    # BƯỚC 1: KIỂM TRA CÚ PHÁP & CODE STYLE
+    - name: 1. Check Syntax & Style
+      run: ./gradlew check -x test
 
-  dependency-submission:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    # BƯỚC 2: BIÊN DỊCH (BUILD)
+    - name: 2. Compile & Build
+      run: ./gradlew classes testClasses
 
-    steps:
-    - uses: actions/checkout@v4
+    # BƯỚC 3: CHẠY UNIT TEST
+    - name: 3. Run Tests
+      run: ./gradlew test
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
+    # BƯỚC 4: ĐÓNG GÓI THÀNH FILE JAR / BOOTJAR
+    - name: 4. Package Application (JAR)
+      run: ./gradlew bootJar -x test
+
+    # BƯỚC PHỤ: LƯU ARTIFACT FILE JAR LÊN GITHUB ACTIONS
+    - name: Upload Executable JAR
+      uses: actions/upload-artifact@v4
       with:
-        java-version: '17'
-        distribution: 'temurin'
-
-    - name: Generate and submit dependency graph
-      uses: gradle/actions/dependency-submission@v4
-      with:
-        build-root-directory: ./HN_K24_CNTT5_DGNL_4-5
+        name: app-release-jar
+        path: HN_K24_CNTT5_DGNL_4-5/build/libs/*.jar
