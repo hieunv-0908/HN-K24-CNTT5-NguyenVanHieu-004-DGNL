@@ -1,0 +1,65 @@
+name: Spring Boot API CI Pipeline
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build-test-package:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Bước 1: Checkout mã nguồn từ Repository về Runner
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # Bước 2: Thiết lập môi trường Java JDK (Ví dụ JDK 17)
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven # Caching dependencies để tăng tốc độ build các lần sau
+
+    # Bước 3: Cấp quyền thi hành cho Maven Wrapper
+    - name: Make mvnw executable
+      run: chmod +x mvnw
+
+    # Bước 4: Check cú pháp & Format (Ví dụ với Spotless/Checkstyle)
+    - name: Check Code Style & Syntax
+      run: ./mvnw spotless:check || true # Bỏ "|| true" nếu muốn ép dừng pipeline khi vi phạm style
+
+    # Bước 5: Biên dịch mã nguồn (Compile)
+    - name: Compile Code
+      run: ./mvnw clean compile
+
+    # Bước 6: Chạy Unit Test & Integration Test
+    - name: Run Tests
+      run: ./mvnw test
+
+    # Bước 7: Đóng gói thành file JAR (Bỏ qua bước test lại để tối ưu thời gian)
+    - name: Package JAR Application
+      run: ./mvnw package -DskipTests
+
+    # Bước 8: Lưu trữ File Artifact JAR (Dùng cho việc Deploy hoặc kiểm thử sau này)
+    - name: Upload JAR Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: spring-boot-api-jar
+        path: target/*.jar
+
+    # (Tùy chọn) Bước 9: Đóng gói Docker Image và push lên Docker Hub
+    # - name: Log in to Docker Hub
+    #   uses: docker/login-action@v3
+    #   with:
+    #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+    #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+    #
+    # - name: Build & Push Docker Image
+    #   uses: docker/build-push-action@v5
+    #   with:
+    #     context: .
+    #     push: true
+    #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/spring-boot-api:latest
